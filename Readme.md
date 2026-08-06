@@ -24,7 +24,6 @@ Follow these steps to set up and run the React frontend locally.
  
 - [Node.js](https://nodejs.org/) (v18 or higher recommended)
 - npm (comes with Node.js)
-- The backend API and Socket.io server running (see the [backend repo](https://github.com/AmmarOsamaAli/quizly-backend))
 
 ### Steps
  
