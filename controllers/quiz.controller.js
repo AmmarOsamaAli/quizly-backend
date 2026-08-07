@@ -48,9 +48,22 @@ async function getQuizById(req,res){
     }
 }
 
+async function getMyQuizzes(req,res){
+        try{
+        const myQuizzes = await Quiz.find({owner: req.user._id})
+        if(myQuizzes.length === 0){
+            return res.status(200).json({message: "You have no quizzes yet!"})
+        }
+        res.status(200).json(myQuizzes)
+    }catch(error){
+        res.status(500).json({message: error.message})
+    }
+}
+
 
 module.exports = {
     getAllQuizzes,
     createQuiz,
-    getQuizById
+    getQuizById,
+    getMyQuizzes
 }
