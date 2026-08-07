@@ -51,9 +51,6 @@ async function getQuizById(req,res){
 async function getMyQuizzes(req,res){
         try{
         const myQuizzes = await Quiz.find({owner: req.user._id})
-        if(myQuizzes.length === 0){
-            return res.status(200).json({message: "You have no quizzes yet!"})
-        }
         res.status(200).json(myQuizzes)
     }catch(error){
         res.status(500).json({message: error.message})
@@ -99,12 +96,12 @@ async function deleteQuiz(req,res){
             return res.status(404).json({message: "Quiz Not Found"})
         }
         if(foundQuiz.owner.toString() !== req.user._id.toString()){
-            return res.status(403).json({message: "You do not own this quiz to delte!"})
+            return res.status(403).json({message: "You do not own this quiz to delete!"})
         }
         const deletedQuiz = await Quiz.findByIdAndDelete(req.params.quizId)
         res.status(200).json({message: "Quiz deleted successfully"})
     }catch(error){
-        res.status(400).json({message: error.message})
+        res.status(500).json({message: error.message})
     }
 }
 module.exports = {
