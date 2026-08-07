@@ -1,4 +1,5 @@
 const Quiz = require('../models/Quiz')
+const mongoose = require("mongoose")
 
 async function getAllQuizzes(req,res){
     try{
@@ -27,8 +28,29 @@ async function createQuiz(req,res){
     }
 }
 
+async function getQuizById(req,res){
+        try{
+        if (!mongoose.Types.ObjectId.isValid(req.params.quizId)) {
+            return res.status(404).json({ message: "Quiz Not Found" });
+        }
+        const foundQuiz = await Quiz.findById(req.params.quizId)
+        if(!foundQuiz){
+            return res.status(404).json({message: "Quiz Not Found"})
+        }
+        if(foundQuiz.visibility === "Private"){
+            if(!req.user || foundQuiz.owner.toString() !== req.user._id.toString()){
+                return res.status(403).json({message: "Access denied. Private quiz"})
+            }
+        }
+        res.status(200).json(foundQuiz)
+    }catch(error){
+        res.status(500).json({message: error.message})
+    }
+}
+
 
 module.exports = {
     getAllQuizzes,
-    createQuiz
+    createQuiz,
+    getQuizById
 }
