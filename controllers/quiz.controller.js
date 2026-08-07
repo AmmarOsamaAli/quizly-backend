@@ -60,10 +60,40 @@ async function getMyQuizzes(req,res){
     }
 }
 
+async function updateQuiz(req,res){
+    try{
+        if (!mongoose.Types.ObjectId.isValid(req.params.quizId)) {
+            return res.status(404).json({ message: "Quiz Not Found" });
+        }
+        const foundQuiz = await Quiz.findById(req.params.quizId)
+        if(!foundQuiz){
+            return res.status(404).json({message: "Quiz Not Found"})
+        }
+        if(foundQuiz.owner.toString() !== req.user._id.toString()){
+            return res.status(403).json({message: "You do not own this quiz to edit!"})
+        }
+        const { title, description, category, visibility, difficulty, questions } = req.body;
+        const updatedQuiz = await Quiz.findByIdAndUpdate(
+            req.params.quizId,{
+            title,
+            description,
+            category,
+            visibility,
+            difficulty,
+            questions,
+            owner: req.user._id
+        }, {new: true, runValidators: true})
+        res.status(200).json(updatedQuiz)
+    }catch(error){
+        res.status(400).json({message: error.message})
+    }
+}
+
 
 module.exports = {
     getAllQuizzes,
     createQuiz,
     getQuizById,
-    getMyQuizzes
+    getMyQuizzes,
+    updateQuiz
 }
