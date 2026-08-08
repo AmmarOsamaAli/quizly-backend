@@ -3,7 +3,7 @@ const mongoose = require("mongoose")
 
 async function getAllQuizzes(req,res){
     try{
-        const allQuizzes = await Quiz.find({visibility: "Public"})
+        const allQuizzes = await Quiz.find({visibility: "Public"}).select("-questions").populate("owner", "username")
         res.status(200).json(allQuizzes)
     }catch(error){
         res.status(500).json({message: error.message})
@@ -33,14 +33,13 @@ async function getQuizById(req,res){
         if (!mongoose.Types.ObjectId.isValid(req.params.quizId)) {
             return res.status(404).json({ message: "Quiz Not Found" });
         }
-        const foundQuiz = await Quiz.findById(req.params.quizId)
+        const foundQuiz = await Quiz.findById(req.params.quizId).populate("owner", "username")
         if(!foundQuiz){
             return res.status(404).json({message: "Quiz Not Found"})
         }
-        if(foundQuiz.visibility === "Private"){
-            if(!req.user || foundQuiz.owner.toString() !== req.user._id.toString()){
-                return res.status(403).json({message: "Access denied. Private quiz"})
-            }
+        console.log(foundQuiz.owner)
+        if(foundQuiz.visibility === "Private" && foundQuiz.owner._id.toString() !== req.user._id.toString()){
+            return res.status(403).json({message: "Access denied. Private quiz"})
         }
         res.status(200).json(foundQuiz)
     }catch(error){
