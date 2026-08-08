@@ -140,6 +140,31 @@ async function getQuestionById(req,res){
     }
 }
 
+async function createQuestion(req,res){
+    try{
+        const foundQuiz = await Quiz.findById(req.params.quizId)
+        if(!foundQuiz){
+            return res.status(404).json({message: "Quiz Not Found"})
+        }
+        if(foundQuiz.owner.toString() !== req.user._id.toString()){
+            return res.status(403).json({message: "Access denied. You do not own the quiz"})
+        }
+        const {text, choices, answer, timeLimit, points} = req.body
+        foundQuiz.questions.push({
+            text,
+            choices,
+            answer,
+            timeLimit,
+            points
+        })
+        await foundQuiz.save()
+        const newQuestion = foundQuiz.questions[foundQuiz.questions.length - 1]
+        res.status(201).json(newQuestion)
+    }catch(error){
+        res.status(400).json({message: error.message})
+    }
+}
+
 
 module.exports = {
     getAllQuizzes,
@@ -150,5 +175,6 @@ module.exports = {
     deleteQuiz,
     //Question functions
     getAllQuestions,
-    getQuestionById
+    getQuestionById,
+    createQuestion
 }

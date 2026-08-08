@@ -1,6 +1,6 @@
 const router = require("express").Router();
 const verifyToken = require("../middleware/verifyToken");
-const {getAllQuizzes, createQuiz, getQuizById, getMyQuizzes, updateQuiz, deleteQuiz, getAllQuestions, getQuestionById} = require('../controllers/quiz.controller');
+const {getAllQuizzes, createQuiz, getQuizById, getMyQuizzes, updateQuiz, deleteQuiz, getAllQuestions, getQuestionById, createQuestion} = require('../controllers/quiz.controller');
 
 router.get('/', getAllQuizzes)
 
@@ -17,5 +17,7 @@ router.delete("/:quizId", verifyToken, deleteQuiz)
 router.get('/:quizId/questions', verifyToken, getAllQuestions)
 
 router.get('/:quizId/questions/:questionId', verifyToken, getQuestionById)
+
+router.post('/:quizId/questions', verifyToken, createQuestion)
 
 module.exports = router;
