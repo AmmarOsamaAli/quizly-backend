@@ -103,11 +103,52 @@ async function deleteQuiz(req,res){
         res.status(500).json({message: error.message})
     }
 }
+
+//Qestions Controller (as its embedded i decided to put it in the same file as the quiz controller to avoid mergeParams etc)
+
+async function getAllQuestions(req,res){
+    try{
+        const foundQuiz = await Quiz.findById(req.params.quizId)
+        if(!foundQuiz){
+            return res.status(404).json({message: "Quiz Not Found"})
+        }
+        if(foundQuiz.visibility === "Private" && foundQuiz.owner.toString() !== req.user._id.toString()){
+            return res.status(403).json({message: "Access denied. Private quiz"})
+        }
+        res.json(foundQuiz.questions)
+    }catch(error){
+        res.status(500).json({message: error.message})
+    }
+}
+
+async function getQuestionById(req,res){
+    try{
+        const foundQuiz = await Quiz.findById(req.params.quizId)
+        if(!foundQuiz){
+            return res.status(404).json({message: "Quiz Not Found"})
+        }
+        if(foundQuiz.visibility === "Private" && foundQuiz.owner.toString() !== req.user._id.toString()){
+            return res.status(403).json({message: "Access denied. Private quiz"})
+        }
+        const foundQuestion = foundQuiz.questions.id(req.params.questionId)
+        if(!foundQuestion){
+            return res.status(404).json({message: "Question not found!"})
+        }
+        res.json(foundQuestion)
+    }catch(error){
+        res.status(500).json({message: error.message})
+    }
+}
+
+
 module.exports = {
     getAllQuizzes,
     createQuiz,
     getQuizById,
     getMyQuizzes,
     updateQuiz,
-    deleteQuiz
+    deleteQuiz,
+    //Question functions
+    getAllQuestions,
+    getQuestionById
 }
