@@ -76,7 +76,6 @@ async function updateQuiz(req,res){
             visibility,
             difficulty,
             questions,
-            owner: req.user._id
         }, {new: true, runValidators: true})
         res.status(200).json(updatedQuiz)
     }catch(error){
@@ -96,7 +95,7 @@ async function deleteQuiz(req,res){
         if(foundQuiz.owner.toString() !== req.user._id.toString()){
             return res.status(403).json({message: "You do not own this quiz to delete!"})
         }
-        const deletedQuiz = await Quiz.findByIdAndDelete(req.params.quizId)
+        await Quiz.findByIdAndDelete(req.params.quizId)
         res.status(200).json({message: "Quiz deleted successfully"})
     }catch(error){
         res.status(500).json({message: error.message})
