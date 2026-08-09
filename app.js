@@ -8,6 +8,7 @@ const cors = require('cors')
 // Routes Import
 const authRoutes = require('./routes/auth.routes')
 const quizRoutes = require('./routes/quiz.routes')
+const gameRoutes = require('./routes/game.routes')
 
 // Middleware
 app.use(
@@ -21,8 +22,9 @@ app.use(morgan('dev'))
 
 
 // Routes
-app.use('/auth',authRoutes)
+app.use('/auth', authRoutes)
 app.use('/quizzes', quizRoutes)
+app.use('/', gameRoutes)
 
 
 
