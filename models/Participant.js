@@ -1,4 +1,6 @@
 const mongoose = require("mongoose")
+const Game = require('../models/Game')
+const User = require('../models/User')
 
 const participantSchema = new mongoose.Schema({
     score: {
@@ -25,7 +27,7 @@ const participantSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "Game"
     }
-})
+}, {timestamps: true})
 
 const Participant = mongoose.model('Participant', participantSchema)
 
