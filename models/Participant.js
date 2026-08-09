@@ -1,4 +1,6 @@
 const mongoose = require("mongoose")
+const Game = require('../models/Game')
+const User = require('../models/User')
 
 
 const answersSchema = new mongoose.Schema({
@@ -49,7 +51,7 @@ const participantSchema = new mongoose.Schema({
         ref: "Game",
         required: true
     }
-})
+}, {timestamps: true})
 
 const Participant = mongoose.model('Participant', participantSchema)
 
