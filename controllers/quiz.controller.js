@@ -31,9 +31,9 @@ async function createQuiz(req, res) {
 async function getQuizById(req, res) {
     try {
         if (!mongoose.Types.ObjectId.isValid(req.params.quizId)) {
-            return res.status(404).json({ message: "Quiz Not Found" });
+            return res.status(400).json({ message: "Invalid Quiz ID format" });
         }
-        const foundQuiz = await Quiz.findById(req.params.quizId)
+        const foundQuiz = await Quiz.findById(req.params.quizId).populate("owner", "username")
         if (!foundQuiz) {
             return res.status(404).json({ message: "Quiz Not Found" })
         }
@@ -55,7 +55,7 @@ async function getMyQuizzes(req, res) {
 async function updateQuiz(req, res) {
     try {
         if (!mongoose.Types.ObjectId.isValid(req.params.quizId)) {
-            return res.status(404).json({ message: "Quiz Not Found" });
+            return res.status(400).json({ message: "Invalid Quiz ID format" });
         }
         const foundQuiz = await Quiz.findById(req.params.quizId)
         if (!foundQuiz) {
@@ -73,7 +73,6 @@ async function updateQuiz(req, res) {
             visibility,
             difficulty,
             questions,
-            owner: req.user._id
         }, { new: true, runValidators: true })
         res.status(200).json(updatedQuiz)
     } catch (error) {
@@ -84,7 +83,7 @@ async function updateQuiz(req, res) {
 async function deleteQuiz(req, res) {
     try {
         if (!mongoose.Types.ObjectId.isValid(req.params.quizId)) {
-            return res.status(404).json({ message: "Quiz Not Found" });
+            return res.status(400).json({ message: "Invalid Quiz ID format" });
         }
         const foundQuiz = await Quiz.findById(req.params.quizId)
         if (!foundQuiz) {
@@ -93,7 +92,7 @@ async function deleteQuiz(req, res) {
         if (foundQuiz.owner.toString() !== req.user._id.toString()) {
             return res.status(403).json({ message: "You do not own this quiz to delete!" })
         }
-        const deletedQuiz = await Quiz.findByIdAndDelete(req.params.quizId)
+        await Quiz.findByIdAndDelete(req.params.quizId)
         res.status(200).json({ message: "Quiz deleted successfully" })
     } catch (error) {
         res.status(500).json({ message: error.message })
@@ -238,5 +237,11 @@ module.exports = {
     getQuizById,
     getMyQuizzes,
     updateQuiz,
-    deleteQuiz
+    deleteQuiz,
+    //Question functions
+    getAllQuestions,
+    getQuestionById,
+    createQuestion,
+    updateQuestion,
+    deleteQuestion
 }

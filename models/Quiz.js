@@ -12,11 +12,15 @@ const questionSchema = new mongoose.Schema({
     }],
     answer: {
         type: String,
-        required: true
+        required: true,
+        validate: {
+            validator: function (answerValue) { return this.choices.includes(answerValue) },
+            message: "Answer must be one of the provided choices"
+        }
     },
     timeLimit: {
         type: Number,
-        enum:[10, 20, 30, 40, 50, 60],
+        enum: [10, 20, 30, 40, 50, 60],
         default: 30
     },
     points: {
@@ -51,15 +55,18 @@ const quizSchema = new mongoose.Schema({
         enum: ["Easy", "Medium", "Hard"],
         default: "Medium"
     },
-    questions: [
-        questionSchema
-    ],
+    questions: {
+        type: [questionSchema],
+        validate: {
+            validator: v => v.length > 0, message: "A quiz must at least have one question"
+        }
+    },
     owner: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
         required: true
     }
-}, {timestamps: true})
+}, { timestamps: true })
 
 const Quiz = mongoose.model('Quiz', quizSchema)
 
