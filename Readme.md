@@ -64,7 +64,7 @@ Follow these steps to set up and run the React frontend locally.
 
 ## Database Design
 
-![alt text](image.png)
+![alt text](Quizly-ERD.png)
 
 
 ## Routes
@@ -106,7 +106,6 @@ Follow these steps to set up and run the React frontend locally.
 |     POST    |    joinGame    |    201   |    /games/code/:code/join    |       Join Game by Code       |
 |     GET     |   getGameById  |    200   |        /games/:gameId        |        View Game Detail       |
 |    PATCH    |    startGame   |    200   |     /games/:gameId/start     |         Start the Game        |
-|    PATCH    |  nextQuestion  |    200   | /games/:gameId/next-question |     Move to Next Question     |
 |     POST    |  submitAnswer  |    200   |    /games/:gameId/answers    |   Submit Answer to Question   |
 |    PATCH    |     endGame    |    200   |      /games/:gameId/end      |          End the Game         |
 |    PATCH    |   cancelGame   |    200   |     /games/:gameId/cancel    |        Cancel the Game        |
