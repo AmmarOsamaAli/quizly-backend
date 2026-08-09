@@ -3,7 +3,7 @@ const mongoose = require("mongoose")
 
 async function getAllQuizzes(req,res){
     try{
-        const allQuizzes = await Quiz.find({visibility: "Public"}).select("-questions").populate("owner", "username")
+        const allQuizzes = await Quiz.find().select("-questions").populate("owner", "username")
         res.status(200).json(allQuizzes)
     }catch(error){
         res.status(500).json({message: error.message})
@@ -36,9 +36,6 @@ async function getQuizById(req,res){
         const foundQuiz = await Quiz.findById(req.params.quizId).populate("owner", "username")
         if(!foundQuiz){
             return res.status(404).json({message: "Quiz Not Found"})
-        }
-        if(foundQuiz.visibility === "Private" && foundQuiz.owner._id.toString() !== req.user._id.toString()){
-            return res.status(403).json({message: "Access denied. Private quiz"})
         }
         res.status(200).json(foundQuiz)
     }catch(error){
@@ -228,7 +225,7 @@ async function deleteQuestion(req,res){
         }
         foundQuestion.deleteOne()
         await foundQuiz.save()
-        res.status(200).json({message: "Question Deleted Successfully"})
+        res.status(204).json({message: "Question Deleted Successfully"})
     }catch(error){
         res.status(500).json({message: error.message})
     }
