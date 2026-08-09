@@ -99,31 +99,29 @@ async function deleteQuiz(req, res) {
         res.status(500).json({ message: error.message })
     }
 }
-<<<<<<< HEAD
-=======
 
 //Qestions Controller (as its embedded i decided to put it in the same file as the quiz controller to avoid mergeParams etc)
 
-async function getAllQuestions(req,res){
-    try{
+async function getAllQuestions(req, res) {
+    try {
         if (!mongoose.Types.ObjectId.isValid(req.params.quizId)) {
             return res.status(400).json({ message: "Invalid Quiz ID format" });
         }
         const foundQuiz = await Quiz.findById(req.params.quizId)
-        if(!foundQuiz){
-            return res.status(404).json({message: "Quiz Not Found"})
+        if (!foundQuiz) {
+            return res.status(404).json({ message: "Quiz Not Found" })
         }
-        if(foundQuiz.visibility === "Private" && foundQuiz.owner.toString() !== req.user._id.toString()){
-            return res.status(403).json({message: "Access denied. Private quiz"})
+        if (foundQuiz.visibility === "Private" && foundQuiz.owner.toString() !== req.user._id.toString()) {
+            return res.status(403).json({ message: "Access denied. Private quiz" })
         }
         res.json(foundQuiz.questions)
-    }catch(error){
-        res.status(500).json({message: error.message})
+    } catch (error) {
+        res.status(500).json({ message: error.message })
     }
 }
 
-async function getQuestionById(req,res){
-    try{
+async function getQuestionById(req, res) {
+    try {
         if (!mongoose.Types.ObjectId.isValid(req.params.quizId)) {
             return res.status(400).json({ message: "Invalid Quiz ID format" });
         }
@@ -131,35 +129,35 @@ async function getQuestionById(req,res){
             return res.status(400).json({ message: "Invalid Question ID format" });
         }
         const foundQuiz = await Quiz.findById(req.params.quizId)
-        if(!foundQuiz){
-            return res.status(404).json({message: "Quiz Not Found"})
+        if (!foundQuiz) {
+            return res.status(404).json({ message: "Quiz Not Found" })
         }
-        if(foundQuiz.visibility === "Private" && foundQuiz.owner.toString() !== req.user._id.toString()){
-            return res.status(403).json({message: "Access denied. Private quiz"})
+        if (foundQuiz.visibility === "Private" && foundQuiz.owner.toString() !== req.user._id.toString()) {
+            return res.status(403).json({ message: "Access denied. Private quiz" })
         }
         const foundQuestion = foundQuiz.questions.id(req.params.questionId)
-        if(!foundQuestion){
-            return res.status(404).json({message: "Question not found!"})
+        if (!foundQuestion) {
+            return res.status(404).json({ message: "Question not found!" })
         }
         res.json(foundQuestion)
-    }catch(error){
-        res.status(500).json({message: error.message})
+    } catch (error) {
+        res.status(500).json({ message: error.message })
     }
 }
 
-async function createQuestion(req,res){
-    try{
+async function createQuestion(req, res) {
+    try {
         if (!mongoose.Types.ObjectId.isValid(req.params.quizId)) {
             return res.status(400).json({ message: "Invalid Quiz ID format" });
         }
         const foundQuiz = await Quiz.findById(req.params.quizId)
-        if(!foundQuiz){
-            return res.status(404).json({message: "Quiz Not Found"})
+        if (!foundQuiz) {
+            return res.status(404).json({ message: "Quiz Not Found" })
         }
-        if(foundQuiz.owner.toString() !== req.user._id.toString()){
-            return res.status(403).json({message: "Access denied. You do not own the quiz"})
+        if (foundQuiz.owner.toString() !== req.user._id.toString()) {
+            return res.status(403).json({ message: "Access denied. You do not own the quiz" })
         }
-        const {text, choices, answer, timeLimit, points} = req.body
+        const { text, choices, answer, timeLimit, points } = req.body
         foundQuiz.questions.push({
             text,
             choices,
@@ -170,13 +168,13 @@ async function createQuestion(req,res){
         await foundQuiz.save()
         const newQuestion = foundQuiz.questions[foundQuiz.questions.length - 1]
         res.status(201).json(newQuestion)
-    }catch(error){
-        res.status(400).json({message: error.message})
+    } catch (error) {
+        res.status(400).json({ message: error.message })
     }
 }
 
-async function updateQuestion(req,res){
-    try{
+async function updateQuestion(req, res) {
+    try {
         if (!mongoose.Types.ObjectId.isValid(req.params.quizId)) {
             return res.status(400).json({ message: "Invalid Quiz ID format" });
         }
@@ -184,17 +182,17 @@ async function updateQuestion(req,res){
             return res.status(400).json({ message: "Invalid Question ID format" });
         }
         const foundQuiz = await Quiz.findById(req.params.quizId)
-        if(!foundQuiz){
-            return res.status(404).json({message: "Quiz Not Found"})
+        if (!foundQuiz) {
+            return res.status(404).json({ message: "Quiz Not Found" })
         }
-        if(foundQuiz.owner.toString() !== req.user._id.toString()){
-            return res.status(403).json({message: "Access denied. You do not own the quiz"})
+        if (foundQuiz.owner.toString() !== req.user._id.toString()) {
+            return res.status(403).json({ message: "Access denied. You do not own the quiz" })
         }
         const foundQuestion = foundQuiz.questions.id(req.params.questionId)
-        if(!foundQuestion){
-            return res.status(404).json({message: "Question Not Found"})
+        if (!foundQuestion) {
+            return res.status(404).json({ message: "Question Not Found" })
         }
-        const {text, choices, answer, timeLimit, points} = req.body
+        const { text, choices, answer, timeLimit, points } = req.body
         foundQuestion.text = text
         foundQuestion.choices = choices
         foundQuestion.answer = answer
@@ -202,13 +200,13 @@ async function updateQuestion(req,res){
         foundQuestion.points = points
         await foundQuiz.save()
         res.status(200).json(foundQuestion)
-    }catch(error){
-        res.status(400).json({message: error.message})
+    } catch (error) {
+        res.status(400).json({ message: error.message })
     }
 }
 
-async function deleteQuestion(req,res){
-    try{
+async function deleteQuestion(req, res) {
+    try {
         if (!mongoose.Types.ObjectId.isValid(req.params.quizId)) {
             return res.status(400).json({ message: "Invalid Quiz ID format" });
         }
@@ -216,25 +214,24 @@ async function deleteQuestion(req,res){
             return res.status(400).json({ message: "Invalid Question ID format" });
         }
         const foundQuiz = await Quiz.findById(req.params.quizId)
-        if(!foundQuiz){
-            return res.status(404).json({message: "Quiz Not Found"})
+        if (!foundQuiz) {
+            return res.status(404).json({ message: "Quiz Not Found" })
         }
-        if(foundQuiz.owner.toString() !== req.user._id.toString()){
-            return res.status(403).json({message: "Access denied. You do not own the quiz"})
+        if (foundQuiz.owner.toString() !== req.user._id.toString()) {
+            return res.status(403).json({ message: "Access denied. You do not own the quiz" })
         }
         const foundQuestion = foundQuiz.questions.id(req.params.questionId)
-        if(!foundQuestion){
-            return res.status(404).json({message: "Question Not Found"})
+        if (!foundQuestion) {
+            return res.status(404).json({ message: "Question Not Found" })
         }
         foundQuestion.deleteOne()
         await foundQuiz.save()
-        res.status(204).json({message: "Question Deleted Successfully"})
-    }catch(error){
-        res.status(500).json({message: error.message})
+        res.status(204).json({ message: "Question Deleted Successfully" })
+    } catch (error) {
+        res.status(500).json({ message: error.message })
     }
 }
 
->>>>>>> main
 module.exports = {
     getAllQuizzes,
     createQuiz,
