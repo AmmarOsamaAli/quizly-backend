@@ -1,7 +1,4 @@
 const mongoose = require("mongoose")
-const Game = require('../models/Game')
-const User = require('../models/User')
-
 
 const answersSchema = new mongoose.Schema({
     question: {
@@ -10,6 +7,7 @@ const answersSchema = new mongoose.Schema({
     },
     selectedAnswer: {
         type: String,
+        required: true
     },
     isCorrect: {
         type: Boolean,
@@ -28,7 +26,7 @@ const participantSchema = new mongoose.Schema({
     score: {
         type: Number,
         required: true,
-        defaul: 0
+        default: 0
     },
     correct: {
         type: Number,
@@ -51,7 +49,7 @@ const participantSchema = new mongoose.Schema({
         ref: "Game",
         required: true
     }
-}, {timestamps: true})
+}, { timestamps: true })
 
 const Participant = mongoose.model('Participant', participantSchema)
 
