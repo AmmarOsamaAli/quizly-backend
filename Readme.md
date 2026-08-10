@@ -107,7 +107,6 @@ Follow these steps to set up and run the React frontend locally.
 |     GET     |   getGameById  |    200   |        /games/:gameId        |        View Game Detail       |
 |    PATCH    |    startGame   |    200   |     /games/:gameId/start     |         Start the Game        |
 |     POST    |  submitAnswer  |    200   |    /games/:gameId/answers    |   Submit Answer to Question   |
-|    PATCH    |     endGame    |    200   |      /games/:gameId/end      |          End the Game         |
 |    PATCH    |   cancelGame   |    200   |     /games/:gameId/cancel    |        Cancel the Game        |
 |     GET     | getGameResults |    200   |    /games/:gameId/results    |     Retrieve Game Results     |
 

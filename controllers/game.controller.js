@@ -2,11 +2,10 @@ const mongoose = require('mongoose')
 const Game = require('../models/Game')
 const Quiz = require('../models/Quiz')
 const Participant = require('../models/Participant')
-const quizController = require('../controllers/quiz.controller')
 
 async function createGame(req, res) {
     try {
-        const foundQuiz = await Quiz.findById(req.params.quizId).populate('owner')
+        const foundQuiz = await Quiz.findById(req.params.quizId)
         if (!foundQuiz) {
             return res.status(404).json({ message: "Quiz Not Found" })
         }
@@ -66,11 +65,11 @@ async function joinGame(req, res) {
             score: 0,
             correct: 0,
             wrong: 0,
-            submittedAnswer: null,
+            answers: [],
             user: req.user._id,
             game: foundGame._id
         })
-        res.status(201).json({ message: "Game Joined Sucessfully" }, createdParticipant)
+        res.status(201).json({ message: "Game Joined Successfully" })
 
     } catch (error) {
         res.status(500).json({ message: error.message })
@@ -94,6 +93,9 @@ async function getGameById(req, res) {
         if (foundParticipant) {
             return res.status(200).json(foundGame)
         }
+
+        return res.status(403).json({ message: "You Can't Access this page" })
+
 
     } catch (error) {
         res.status(500).json({ message: error.message })
@@ -137,13 +139,6 @@ async function submitAnswer(req, res) {
 }
 
 
-async function endGame(req, res) {
-    try {
-
-    } catch (error) {
-        res.status(500).json({ message: error.message })
-    }
-}
 
 async function cancelGame(req, res) {
     try {
@@ -168,7 +163,6 @@ module.exports = {
     getGameById,
     startGame,
     submitAnswer,
-    endGame,
     cancelGame,
     getGameResults
 }
