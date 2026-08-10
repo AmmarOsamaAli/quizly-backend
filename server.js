@@ -12,7 +12,6 @@ async function startServer() {
 
     initializeSocket(server)
 
-
     server.listen(PORT, () => {
         console.log(`App is running on port ${PORT}`);
     });
