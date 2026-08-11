@@ -10,4 +10,11 @@ router.get('/games/:gameId', verifyToken, gameController.getGameById)
 
 router.patch('/games/:gameId/start', verifyToken, gameController.startGame)
 
+router.post('/games/:gameId/answers', verifyToken, gameController.submitAnswer)
+
+router.patch('/games/:gameId/cancel', verifyToken, gameController.cancelGame)
+
+router.get('/games/:gameId/results', verifyToken, gameController.getGameResults)
+
+
 module.exports = router
