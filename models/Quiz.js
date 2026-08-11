@@ -57,9 +57,6 @@ const quizSchema = new mongoose.Schema({
     },
     questions: {
         type: [questionSchema],
-        validate: {
-            validator: v => v.length > 0, message: "A quiz must at least have one question"
-        }
     },
     owner: {
         type: mongoose.Schema.Types.ObjectId,

@@ -70,7 +70,7 @@ async function joinGame(req, res) {
             user: req.user._id,
             game: foundGame._id
         })
-        res.status(201).json({
+        return res.status(201).json({
             message: "Game Joined Successfully",
             gameId: foundGame._id,
             participant: createdParticipant
