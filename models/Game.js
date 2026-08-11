@@ -1,4 +1,4 @@
-const mongoose = require ('mongoose')
+const mongoose = require('mongoose')
 
 const gameSchema = new mongoose.Schema({
     code: {
@@ -18,6 +18,9 @@ const gameSchema = new mongoose.Schema({
         type: Number,
         default: null
     },
+    currentQuestionStartedAt: {
+        type: Date,
+    },
     host: {
         type: mongoose.Schema.Types.ObjectId,
         required: true,
@@ -29,7 +32,7 @@ const gameSchema = new mongoose.Schema({
         ref: "Quiz"
     }
 
-}, {timestamps: true})
+}, { timestamps: true })
 
 
 const Game = mongoose.model('Game', gameSchema)
