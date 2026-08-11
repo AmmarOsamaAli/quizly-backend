@@ -3,10 +3,10 @@ const mongoose = require("mongoose")
 
 async function getAllQuizzes(req, res) {
     try {
-        const allQuizzes = await Quiz.find().select("-questions").populate("owner", "username")
-        res.status(200).json(allQuizzes)
+        const allQuizzes = await Quiz.find({ visibility: "Public" }).select("-questions").populate("owner", "username")
+        return res.status(200).json(allQuizzes)
     } catch (error) {
-        res.status(500).json({ message: error.message })
+        return res.status(500).json({ message: error.message })
     }
 }
 
@@ -22,9 +22,9 @@ async function createQuiz(req, res) {
             questions,
             owner: req.user._id
         })
-        res.status(201).json(createdQuiz)
+        return res.status(201).json(createdQuiz)
     } catch (error) {
-        res.status(400).json({ message: error.message })
+        return res.status(400).json({ message: error.message })
     }
 }
 
@@ -37,18 +37,36 @@ async function getQuizById(req, res) {
         if (!foundQuiz) {
             return res.status(404).json({ message: "Quiz Not Found" })
         }
-        res.status(200).json(foundQuiz)
+
+        const isOwner = foundQuiz.owner._id.toString() === req.user._id.toString()
+
+        if (foundQuiz.visibility === "Private" && !isOwner) {
+            return res.status(403).json({ message: "Access denied. Private quiz" })
+        }
+
+        if (isOwner) {
+            return res.status(200).json(foundQuiz)
+        }
+
+        const safeQuiz = foundQuiz.toObject()
+
+        safeQuiz.questions = safeQuiz.questions.map((question) => {
+            const { answer, ...safeQuestion } = question
+            return safeQuestion
+        })
+
+        return res.status(200).json(foundQuiz)
     } catch (error) {
-        res.status(500).json({ message: error.message })
+        return res.status(500).json({ message: error.message })
     }
 }
 
 async function getMyQuizzes(req, res) {
     try {
         const myQuizzes = await Quiz.find({ owner: req.user._id })
-        res.status(200).json(myQuizzes)
+        return res.status(200).json(myQuizzes)
     } catch (error) {
-        res.status(500).json({ message: error.message })
+        return res.status(500).json({ message: error.message })
     }
 }
 
@@ -64,7 +82,7 @@ async function updateQuiz(req, res) {
         if (foundQuiz.owner.toString() !== req.user._id.toString()) {
             return res.status(403).json({ message: "You do not own this quiz to edit!" })
         }
-        const { title, description, category, visibility, difficulty, questions } = req.body;
+        const { title, description, category, visibility, difficulty } = req.body;
         const updatedQuiz = await Quiz.findByIdAndUpdate(
             req.params.quizId, {
             title,
@@ -72,11 +90,10 @@ async function updateQuiz(req, res) {
             category,
             visibility,
             difficulty,
-            questions,
         }, { new: true, runValidators: true })
-        res.status(200).json(updatedQuiz)
+        return res.status(200).json(updatedQuiz)
     } catch (error) {
-        res.status(400).json({ message: error.message })
+        return res.status(400).json({ message: error.message })
     }
 }
 
@@ -93,9 +110,9 @@ async function deleteQuiz(req, res) {
             return res.status(403).json({ message: "You do not own this quiz to delete!" })
         }
         await Quiz.findByIdAndDelete(req.params.quizId)
-        res.status(200).json({ message: "Quiz deleted successfully" })
+        return res.status(200).json({ message: "Quiz deleted successfully" })
     } catch (error) {
-        res.status(500).json({ message: error.message })
+        return res.status(500).json({ message: error.message })
     }
 }
 
@@ -110,12 +127,12 @@ async function getAllQuestions(req, res) {
         if (!foundQuiz) {
             return res.status(404).json({ message: "Quiz Not Found" })
         }
-        if (foundQuiz.visibility === "Private" && foundQuiz.owner.toString() !== req.user._id.toString()) {
+        if (foundQuiz.owner.toString() !== req.user._id.toString()) {
             return res.status(403).json({ message: "Access denied. Private quiz" })
         }
-        res.json(foundQuiz.questions)
+        return res.status(200).json(foundQuiz.questions)
     } catch (error) {
-        res.status(500).json({ message: error.message })
+        return res.status(500).json({ message: error.message })
     }
 }
 
@@ -131,16 +148,16 @@ async function getQuestionById(req, res) {
         if (!foundQuiz) {
             return res.status(404).json({ message: "Quiz Not Found" })
         }
-        if (foundQuiz.visibility === "Private" && foundQuiz.owner.toString() !== req.user._id.toString()) {
+        if (oundQuiz.owner.toString() !== req.user._id.toString()) {
             return res.status(403).json({ message: "Access denied. Private quiz" })
         }
         const foundQuestion = foundQuiz.questions.id(req.params.questionId)
         if (!foundQuestion) {
             return res.status(404).json({ message: "Question not found!" })
         }
-        res.json(foundQuestion)
+        return res.status(200).json(foundQuestion)
     } catch (error) {
-        res.status(500).json({ message: error.message })
+        return res.status(500).json({ message: error.message })
     }
 }
 
@@ -166,9 +183,9 @@ async function createQuestion(req, res) {
         })
         await foundQuiz.save()
         const newQuestion = foundQuiz.questions[foundQuiz.questions.length - 1]
-        res.status(201).json(newQuestion)
+        return res.status(201).json(newQuestion)
     } catch (error) {
-        res.status(400).json({ message: error.message })
+        return res.status(400).json({ message: error.message })
     }
 }
 
@@ -198,9 +215,9 @@ async function updateQuestion(req, res) {
         foundQuestion.timeLimit = timeLimit
         foundQuestion.points = points
         await foundQuiz.save()
-        res.status(200).json(foundQuestion)
+        return res.status(200).json(foundQuestion)
     } catch (error) {
-        res.status(400).json({ message: error.message })
+        return res.status(400).json({ message: error.message })
     }
 }
 
@@ -225,9 +242,9 @@ async function deleteQuestion(req, res) {
         }
         foundQuestion.deleteOne()
         await foundQuiz.save()
-        res.status(204).json({ message: "Question Deleted Successfully" })
+        return res.status(204).json({ message: "Question Deleted Successfully" })
     } catch (error) {
-        res.status(500).json({ message: error.message })
+        return res.status(500).json({ message: error.message })
     }
 }
 
