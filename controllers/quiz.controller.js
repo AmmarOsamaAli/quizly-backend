@@ -148,7 +148,7 @@ async function getQuestionById(req, res) {
         if (!foundQuiz) {
             return res.status(404).json({ message: "Quiz Not Found" })
         }
-        if (oundQuiz.owner.toString() !== req.user._id.toString()) {
+        if (foundQuiz.owner.toString() !== req.user._id.toString()) {
             return res.status(403).json({ message: "Access denied. Private quiz" })
         }
         const foundQuestion = foundQuiz.questions.id(req.params.questionId)
