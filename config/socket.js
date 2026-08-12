@@ -96,9 +96,7 @@ function initializeSocket(server) {
                     }
                 }
 
-                socket.emit("gameRoomJoined", {
-                    gameId: foundGame._id
-                })
+                socket.emit("gameRoomJoined", { gameId: foundGame._id })
 
             } catch (error) {
                 console.error("Game room join error:", error.message)
