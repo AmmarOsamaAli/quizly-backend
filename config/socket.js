@@ -1,5 +1,5 @@
 const { Server } = require("socket.io")
-const { jwt, decode } = require('jsonwebtoken')
+const { jwt } = require('jsonwebtoken')
 const Game = require("../models/Game")
 const Participant = require("../models/Participant")
 
@@ -42,7 +42,7 @@ function initializeSocket(server) {
                 const foundGame = await Game.findById(gameId)
 
                 if (!foundGame) {
-                    return socket.emit("GameRoomError", {
+                    return socket.emit("gameRoomError", {
                         message: "Game Not Found"
                     })
                 }
@@ -67,7 +67,22 @@ function initializeSocket(server) {
 
                 socket.join(foundGame._id.toString())
 
+                const participants = await Participant.find({
+                    game: foundGame._id
+                }).populate("user", "username")
+
+                const lobbyPlayers = participants.map((participant) => ({
+                    _id: participant.user._id,
+                    username: participant.user.username
+                }))
+
                 console.log(`User ${socket.user.username} joined game room ${foundGame._id}`)
+
+                io.to(foundGame._id.toString()).emit(
+                    "lobbyPlayers",
+                    lobbyPlayers
+                )
+
 
                 socket.emit("gameRoomJoined", { gameId: foundGame._id })
 
