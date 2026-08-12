@@ -55,7 +55,7 @@ async function getQuizById(req, res) {
             return safeQuestion
         })
 
-        return res.status(200).json(foundQuiz)
+        return res.status(200).json(safeQuiz)
     } catch (error) {
         return res.status(500).json({ message: error.message })
     }
