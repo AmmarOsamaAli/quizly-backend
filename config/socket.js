@@ -1,5 +1,5 @@
 const { Server } = require("socket.io")
-const { jwt } = require('jsonwebtoken')
+const jwt = require('jsonwebtoken')
 const Game = require("../models/Game")
 const Participant = require("../models/Participant")
 
@@ -60,7 +60,7 @@ function initializeSocket(server) {
                 }
 
                 if (!isHost && !isParticipant) {
-                    return socket.emit("GameRoomError", {
+                    return socket.emit("gameRoomError", {
                         message: "You do not have access to this game"
                     })
                 }
@@ -93,6 +93,36 @@ function initializeSocket(server) {
                         }
 
                         socket.emit("questionStarted", questionForPlayer)
+                    }
+                }
+
+                if (foundGame.status === "Results") {
+                    const currentQuestion =
+                        foundGame.quiz.questions[foundGame.currentQuestionIndex]
+
+                    if (currentQuestion) {
+                        let selectedAnswer = null
+
+                        if (!isHost) {
+                            const participant = await Participant.findOne({
+                                user: socket.user._id,
+                                game: foundGame._id
+                            })
+
+                            const submittedAnswer = participant?.answers.find(
+                                (answer) =>
+                                    answer.question.toString() === currentQuestion._id.toString()
+                            )
+
+                            selectedAnswer = submittedAnswer?.selectedAnswer || null
+                        }
+
+                        socket.emit("questionResults", {
+                            questionId: currentQuestion._id,
+                            correctAnswer: currentQuestion.answer,
+                            currentQuestionIndex: foundGame.currentQuestionIndex,
+                            selectedAnswer
+                        })
                     }
                 }
 
