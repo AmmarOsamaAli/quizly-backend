@@ -1,5 +1,5 @@
 const { Server } = require("socket.io")
-const { jwt, decode } = require('jsonwebtoken')
+const { jwt } = require('jsonwebtoken')
 const Game = require("../models/Game")
 const Participant = require("../models/Participant")
 
@@ -42,7 +42,7 @@ function initializeSocket(server) {
                 const foundGame = await Game.findById(gameId)
 
                 if (!foundGame) {
-                    return socket.emit("GameRoomError", {
+                    return socket.emit("gameRoomError", {
                         message: "Game Not Found"
                     })
                 }
