@@ -39,7 +39,7 @@ function initializeSocket(server) {
 
         socket.on("joinGameRoom", async (gameId) => {
             try {
-                const foundGame = await Game.findById(gameId)
+                const foundGame = await Game.findById(gameId).populate('quiz')
 
                 if (!foundGame) {
                     return socket.emit("gameRoomError", {
@@ -67,24 +67,38 @@ function initializeSocket(server) {
 
                 socket.join(foundGame._id.toString())
 
-                const participants = await Participant.find({
-                    game: foundGame._id
-                }).populate("user", "username")
+                const participants = await Participant.find({ game: foundGame._id }).populate("user", "username")
 
                 const lobbyPlayers = participants.map((participant) => ({
                     _id: participant.user._id,
                     username: participant.user.username
                 }))
 
-                console.log(`User ${socket.user.username} joined game room ${foundGame._id}`)
+                io.to(foundGame._id.toString()).emit("lobbyPlayers", lobbyPlayers)
 
-                io.to(foundGame._id.toString()).emit(
-                    "lobbyPlayers",
-                    lobbyPlayers
-                )
+                if (foundGame.status === "Active") {
+                    const currentQuestion =
+                        foundGame.quiz.questions[foundGame.currentQuestionIndex]
 
+                    if (currentQuestion) {
+                        const questionForPlayer = {
+                            _id: currentQuestion._id,
+                            text: currentQuestion.text,
+                            choices: currentQuestion.choices,
+                            timeLimit: currentQuestion.timeLimit,
+                            points: currentQuestion.points,
+                            currentQuestionIndex: foundGame.currentQuestionIndex,
+                            totalQuestions: foundGame.quiz.questions.length,
+                            startedAt: foundGame.currentQuestionStartedAt
+                        }
 
-                socket.emit("gameRoomJoined", { gameId: foundGame._id })
+                        socket.emit("questionStarted", questionForPlayer)
+                    }
+                }
+
+                socket.emit("gameRoomJoined", {
+                    gameId: foundGame._id
+                })
 
             } catch (error) {
                 console.error("Game room join error:", error.message)
