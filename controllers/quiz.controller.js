@@ -40,6 +40,10 @@ async function getQuizById(req, res) {
 
         const isOwner = foundQuiz.owner._id.toString() === req.user._id.toString()
 
+        if (foundQuiz.visibility === "Private" && !isOwner) {
+            return res.status(403).json({ message: "Access denied. Private quiz" })
+        }
+
         if (isOwner) {
             return res.status(200).json(foundQuiz)
         }
@@ -144,7 +148,7 @@ async function getQuestionById(req, res) {
         if (!foundQuiz) {
             return res.status(404).json({ message: "Quiz Not Found" })
         }
-        if (foundQuiz.owner.toString() !== req.user._id.toString()) {
+        if (oundQuiz.owner.toString() !== req.user._id.toString()) {
             return res.status(403).json({ message: "Access denied. Private quiz" })
         }
         const foundQuestion = foundQuiz.questions.id(req.params.questionId)
