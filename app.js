@@ -10,6 +10,9 @@ const authRoutes = require('./routes/auth.routes')
 const quizRoutes = require('./routes/quiz.routes')
 const gameRoutes = require('./routes/game.routes')
 
+const dns = require("dns")
+dns.setServers(["8.8.8.8", "1.1.1.1"])
+
 // Middleware
 app.use(
     cors({
