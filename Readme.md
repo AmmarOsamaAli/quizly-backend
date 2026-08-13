@@ -1,6 +1,6 @@
 # Project Name
 
-Quizly | Create Quizzes, Join Games, and Compete with Friends
+### **Quizly | Create Quizzes, Join Games, and Compete with Friends**
 
 ## Overview
 
@@ -112,3 +112,7 @@ Follow these steps to set up and run the React frontend locally.
 
 
 ## Credits
+
+- Mr. Omar Kamal (https://github.com/omarakamal)
+- Mr. Zaid (https://github.com/justzaid)
+- Mrs. Israa Ashoor (https://github.com/ISRAA-ASHOOR)
